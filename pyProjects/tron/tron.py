@@ -1,11 +1,13 @@
 
 import pygame
+from player import Player
 from time import sleep
+
 
 # Define some colors
 BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
-ORANGE = (255, 69, 55)
+ORANGE = (100, 69, 55)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
@@ -19,6 +21,9 @@ MARGIN = 1
 
 GRID_ROWS = 50
 GRID_COLUMNS = 50
+
+P1_KEYS = [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT]
+P2_KEYS = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d]
 
 # Create a 2 dimensional array. A two dimensional
 # array is simply a list of lists.
@@ -49,90 +54,59 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-#Initial user positions
-p1_pos = [0,24]
-p2_pos = [49,24]
+# Create Player Instances
+p1 = Player(24, 0, 'down')
+p2 = Player(24, 49, 'up')
 
 #Set first grid position to visited
-grid[p1_pos[0]][p1_pos[1]] = 1
-grid[p2_pos[0]][p2_pos[1]] = 2
+grid[p1.y][p1.x] = 1
+grid[p2.y][p2.x] = 2
 
-p1_momentum = 'down'
-p2_momentum = 'up'
+
 
 # -------- Main Program Loop -----------
 while not done:
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
             done = True  # Flag that we are done so we exit this loop
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT and p1_momentum != 'right':
-            # Change the x/y screen coordinates to grid coordinates
-                p1_momentum = 'left'
-            elif event.key == pygame.K_UP and p1_momentum != 'down':
-                p1_momentum = 'up'
-            elif event.key == pygame.K_RIGHT and p1_momentum != 'left':
-                p1_momentum = 'right'
-            elif event.key == pygame.K_DOWN and p1_momentum != 'up':
-                p1_momentum = 'down'
-    
-            if event.key == pygame.K_a and p2_momentum != 'right':
-            # Change the x/y screen coordinates to grid coordinates
-                p2_momentum = 'left'
-            elif event.key == pygame.K_w and p2_momentum != 'down':
-                p2_momentum = 'up'
-            elif event.key == pygame.K_d and p2_momentum != 'left':
-                p2_momentum = 'right'
-            elif event.key == pygame.K_s and p2_momentum != 'up':
-                p2_momentum = 'down'
+        elif event.type == pygame.KEYDOWN: 
+            if event.key in P1_KEYS:
+                p1.set_momentum(event.key)    
+            elif event.key in P2_KEYS:
+                p2.set_momentum(event.key)
 
-    if p1_momentum == "left" :
-    # Change the x/y screen coordinates to grid coordinates
-        p1_pos[1] -= 1
-    elif p1_momentum == 'up':
-        p1_pos[0] -= 1
-    elif p1_momentum == 'right':
-        p1_pos[1] += 1
-    elif p1_momentum == 'down':
-        p1_pos[0] += 1
+
+    # TODO: Move Players
+    p1.move()
+    p2.move()
     
-    if p2_momentum == "left" :
-    # Change the x/y screen coordinates to grid coordinates
-        p2_pos[1] -= 1
-    elif p2_momentum == 'up':
-        p2_pos[0] -= 1
-    elif p2_momentum == 'right':
-        p2_pos[1] += 1
-    elif p2_momentum == 'down':
-        p2_pos[0] += 1
-    #Collision detection
-    if p1_pos[0] < 0 or p1_pos[0] > GRID_COLUMNS:
+    # TODO: Detect Collison, Out of Bounds, and Update Grid 
+    if p1.x < 0 or p1.x > GRID_COLUMNS - 1:
         pygame.quit()
-    elif p1_pos[1] < 0 or p1_pos[1] > GRID_ROWS:
+    elif p1.y < 0 or p1.y > GRID_ROWS - 1:
         pygame.quit()
-    elif grid[p1_pos[0]][p1_pos[1]] == 1 or grid[p1_pos[0]][p1_pos[1]] == 2:
+    elif grid[p1.y][p1.x] == 1 or grid[p1.y][p1.x] == 2:
         pygame.quit()
     else:
-        grid[p1_pos[0]][p1_pos[1]] = 1
+        grid[p1.y][p1.x] = 1
 
-    if p2_pos[0] < 0 or p2_pos[0] > GRID_COLUMNS:
+    if p2.x < 0 or p2.x > GRID_COLUMNS - 1:
         pygame.quit()
-    elif p2_pos[1] < 0 or p2_pos[1] > GRID_ROWS:
+    elif p2.y < 0 or p2.y > GRID_ROWS - 1:
         pygame.quit()
-    elif grid[p2_pos[0]][p2_pos[1]] == 2 or grid[p2_pos[0]][p2_pos[1]] == 1:
+    elif grid[p2.y][p2.x] == 2 or grid[p2.y][p2.x] == 1:
         pygame.quit()
     else:
-        grid[p2_pos[0]][p2_pos[1]] = 2
+        grid[p2.y][p2.x] = 2
     # Set the screen background
     #screen.fill(BLACK)
-    print(p1_pos[0], p1_pos[1])
     # Draw the grid
-    for row in range(50):
-        for column in range(50):
+    for row in range(GRID_ROWS):
+        for column in range(GRID_COLUMNS):
             color = WHITE
-            if row == p1_pos[0] and column == p1_pos[1]:
+            if row == p1.y and column == p1.x:
                 color = RED
-            elif row == p2_pos[0] and column == p2_pos[1]:
+            elif row == p2.y and column == p2.x:
                 color = BLUE
             elif grid[row][column] == 1:
                 color = GREEN
