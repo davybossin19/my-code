@@ -2,6 +2,7 @@
 import pygame
 from player import Player
 from time import sleep
+from typing import List
 
 
 # Define some colors
@@ -27,14 +28,66 @@ P2_KEYS = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d]
 
 # Create a 2 dimensional array. A two dimensional
 # array is simply a list of lists.
-def game_over(screen):
-    screen.fill(BLACK)
-    fontTitle = pygame.font.SysFont("arial", 50)
-    screen.blit(fontTitle.render('GAME OVER!', True, WHITE), (20, 250))
-    sleep(10)
-    pygame.quit()
+def out_of_bounds(player: Player) -> bool:
+    return ((player.x < 0) or (player.x > GRID_COLUMNS - 1) 
+        or player.y < 0 or player.y > GRID_ROWS - 1)
 
-def draw_grid(p1, p2, grid, screen):
+def on_occupied_square(player: Player, grid: List[List[int]]) -> bool:
+    cur_square_val = grid[player.y][player.x]
+    return cur_square_val == 1 or cur_square_val == 2
+
+def illegal_position(player: Player, grid: bool) -> bool:
+    return out_of_bounds(player) or on_occupied_square(player, grid)
+
+def collision_checker(p1: Player, p2: Player, grid: List[List[int]], screen: pygame.display):
+    #Check tie conditions
+    if p1.x == p2.x and p1.y == p2.y:
+        game_over('tie', p1, p2, grid, screen)
+    elif illegal_position(p1, grid) and illegal_position(p2, grid):
+        game_over('tie', p1, p2, grid, screen)
+    
+    # P1 win codition
+    elif (not illegal_position(p1, grid)) and illegal_position(p2, grid):
+        game_over('p1', p1, p2, grid, screen)
+
+    elif illegal_position(p1, grid) and (not illegal_position(p2, grid)):
+        game_over('p2', p1, p2, grid, screen)
+
+
+
+def game_over(result: str, p1: Player, p2: Player, grid: List[List[int]], screen: pygame.display) -> None:
+    clock = pygame.time.Clock()
+
+    result_message =''
+
+    if result == 'tie':
+        result_message = "It's a tie"
+    elif result == 'p1':
+        result_message = "Player 1 wins!"
+    elif result == 'p2':
+        result_message = "Player 2 wins!"
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:  # If user clicked close
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                main()
+        draw_grid(p1, p2, grid, screen)
+        fontTitle1 = pygame.font.SysFont("arial", 50)
+        fontTitle2 = pygame.font.SysFont("arial", 30)
+        fontTitle3 = pygame.font.SysFont("arial", 30)
+
+        screen.blit(fontTitle1.render('GAME OVER!', True, BLACK), (100, 250))
+        screen.blit(fontTitle2.render('Press any key to play again', True, BLACK), (80, 300))
+        screen.blit(fontTitle3.render(result_message, True, BLACK), (80, 350))
+
+        clock.tick(60)
+        pygame.display.flip()
+        sleep(0.1)
+
+
+def draw_grid(p1: Player, p2:Player , grid: List[List[int]], screen: pygame.display) -> None:
     for row in range(GRID_ROWS):
             for column in range(GRID_COLUMNS):
                 color = WHITE
@@ -55,7 +108,7 @@ def draw_grid(p1, p2, grid, screen):
                                 HEIGHT])
 
 
-def standby(p1, p2, grid, screen):
+def standby(p1: Player, p2: Player, grid: List[List[int]], screen: pygame.display) -> None:
     clock = pygame.time.Clock()
 
     play = False
@@ -77,7 +130,7 @@ def standby(p1, p2, grid, screen):
         sleep(0.1)
 
 
-def main():
+def main() -> None:
     grid = []
     for row in range(GRID_ROWS):
         # Add an empty array that will hold each cell
@@ -132,23 +185,25 @@ def main():
         p2.move()
         
         # Detect Collison, Out of Bounds, and Update Grid 
-        if p1.x < 0 or p1.x > GRID_COLUMNS - 1:
-            pygame.quit()
-        elif p1.y < 0 or p1.y > GRID_ROWS - 1:
-            pygame.quit()
-        elif grid[p1.y][p1.x] == 1 or grid[p1.y][p1.x] == 2:
-            pygame.quit()
-        else:
-            grid[p1.y][p1.x] = 1
+        collision_checker(p1, p2, grid, screen)
+        # if p1.x < 0 or p1.x > GRID_COLUMNS - 1:
+        #     game_over('tie', p1, p2, grid, screen)
+        # elif p1.y < 0 or p1.y > GRID_ROWS - 1:
+        #     game_over(p1, p2, grid, screen)
+        # elif grid[p1.y][p1.x] == 1 or grid[p1.y][p1.x] == 2:
+        #     game_over(p1, p2, grid, screen)
+        # else:
+        #     grid[p1.y][p1.x] = 1
 
-        if p2.x < 0 or p2.x > GRID_COLUMNS - 1:
-            pygame.quit()
-        elif p2.y < 0 or p2.y > GRID_ROWS - 1:
-            pygame.quit()
-        elif grid[p2.y][p2.x] == 2 or grid[p2.y][p2.x] == 1:
-            pygame.quit()
-        else:
-            grid[p2.y][p2.x] = 2
+        # if p2.x < 0 or p2.x > GRID_COLUMNS - 1:
+        #     game_over(p1, p2, grid, screen)
+        # elif p2.y < 0 or p2.y > GRID_ROWS - 1:
+        #     game_over(p1, p2, grid, screen)
+        # elif grid[p2.y][p2.x] == 2 or grid[p2.y][p2.x] == 1:
+        #     game_over(p1, p2, grid, screen)
+
+        grid[p1.y][p1.x] = 1
+        grid[p2.y][p2.x] = 2
 
         # Draw the grid
         draw_grid(p1, p2, grid, screen)
