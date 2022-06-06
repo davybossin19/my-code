@@ -13,15 +13,19 @@ class Player:
     def get_y(self) -> int:
         return self.y
 
-    def set_momentum(self, key: pygame.event) -> None:
-        if (key == pygame.K_UP or key == pygame.K_w) and self.momentum != 'down':
+    def set_momentum(self, key: pygame.event, cur_momentum: str) -> None:
+        if (key == pygame.K_UP or key == pygame.K_w) and cur_momentum != 'down':
             self.momentum = 'up'
-        elif (key == pygame.K_DOWN or key == pygame.K_s) and self.momentum != 'up':
+            
+        elif (key == pygame.K_DOWN or key == pygame.K_s) and cur_momentum != 'up':
             self.momentum = 'down'
-        elif (key == pygame.K_LEFT or key == pygame.K_a) and self.momentum != 'right':
+            
+        elif (key == pygame.K_LEFT or key == pygame.K_a) and cur_momentum != 'right':
             self.momentum = 'left'
-        if (key == pygame.K_RIGHT or key == pygame.K_d) and self.momentum != 'left':
+            
+        if (key == pygame.K_RIGHT or key == pygame.K_d) and cur_momentum != 'left':
             self.momentum = 'right'
+            
 
     def move(self) -> None:
         if self.momentum == 'left':

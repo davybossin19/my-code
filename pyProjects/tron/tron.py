@@ -170,14 +170,16 @@ def main() -> None:
 
     # -------- Main Program Loop -----------
     while not done:
+        p1_momentum = p1.momentum
+        p2_momentum = p2.momentum
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
                 done = True  # Flag that we are done so we exit this loop
             elif event.type == pygame.KEYDOWN: 
                 if event.key in P1_KEYS:
-                    p1.set_momentum(event.key)    
+                    p1.set_momentum(event.key, p1_momentum)    
                 elif event.key in P2_KEYS:
-                    p2.set_momentum(event.key)
+                    p2.set_momentum(event.key, p2_momentum)
 
 
         # Move position of p1 and p2 based on momentum
