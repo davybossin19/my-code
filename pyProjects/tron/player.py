@@ -1,4 +1,4 @@
-from multiprocessing import Event
+
 import pygame
 
 class Player:

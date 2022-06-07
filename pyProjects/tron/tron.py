@@ -8,7 +8,7 @@ from typing import List
 # Define some colors
 BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
-ORANGE = (100, 69, 55)
+ORANGE = (255, 155, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
@@ -23,9 +23,17 @@ MARGIN = 1
 GRID_ROWS = 50
 GRID_COLUMNS = 50
 
+WINDOW_SIZE = [555, 555]
+
 P1_KEYS = [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT]
 P2_KEYS = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d]
 
+pygame.init()
+
+FONTTITLE = pygame.font.SysFont("arial", 50)
+FONTTITLE1 = pygame.font.SysFont("arial", 50)
+FONTTITLE2 = pygame.font.SysFont("arial", 30)
+FONTTITLE3 = pygame.font.SysFont("arial", 30)
 # Create a 2 dimensional array. A two dimensional
 # array is simply a list of lists.
 def out_of_bounds(player: Player) -> bool:
@@ -74,13 +82,10 @@ def game_over(result: str, p1: Player, p2: Player, grid: List[List[int]], screen
             if event.type == pygame.KEYDOWN:
                 main()
         draw_grid(p1, p2, grid, screen)
-        fontTitle1 = pygame.font.SysFont("arial", 50)
-        fontTitle2 = pygame.font.SysFont("arial", 30)
-        fontTitle3 = pygame.font.SysFont("arial", 30)
 
-        screen.blit(fontTitle1.render('GAME OVER!', True, BLACK), (100, 250))
-        screen.blit(fontTitle2.render('Press any key to play again', True, BLACK), (80, 300))
-        screen.blit(fontTitle3.render(result_message, True, BLACK), (80, 350))
+        screen.blit(FONTTITLE1.render('GAME OVER!', True, BLACK), (100, 250))
+        screen.blit(FONTTITLE2.render('Press any key to play again', True, BLACK), (80, 300))
+        screen.blit(FONTTITLE3.render(result_message, True, BLACK), (80, 350))
 
         clock.tick(60)
         pygame.display.flip()
@@ -121,8 +126,7 @@ def standby(p1: Player, p2: Player, grid: List[List[int]], screen: pygame.displa
         
         draw_grid(p1, p2, grid, screen)
 
-        fontTitle = pygame.font.SysFont("arial", 50)
-        screen.blit(fontTitle.render('Press any key to begin!', True, BLACK), (20, 250))    
+        screen.blit(FONTTITLE.render('Press any key to begin!', True, BLACK), (20, 250))    
 
         clock.tick(60)
         # Go ahead and update the screen with what we've drawn.
@@ -143,14 +147,11 @@ def main() -> None:
     # column numbers start at zero.)
 
     # Initialize pygame
-    pygame.init()
-
     # Set the HEIGHT and WIDTH of the screen
-    WINDOW_SIZE = [555, 555]
     screen = pygame.display.set_mode(WINDOW_SIZE)
 
     # Set title of screen
-    pygame.display.set_caption("Tron")
+    pygame.display.set_caption("Tron: Light Cycle Game")
 
     # Loop until the user clicks the close button.
     done = False
@@ -159,8 +160,8 @@ def main() -> None:
     clock = pygame.time.Clock()
 
     # Create Player Instances
-    p1 = Player(GRID_COLUMNS // 2, 0, 'down')
-    p2 = Player(GRID_COLUMNS // 2, GRID_ROWS - 1, 'up')
+    p1 = Player(GRID_COLUMNS // 2, GRID_ROWS // 4, 'down')
+    p2 = Player(GRID_COLUMNS // 2, round(GRID_ROWS * 0.75), 'up')
 
     #Set first grid position to visited
     grid[p1.y][p1.x] = 1
@@ -188,21 +189,6 @@ def main() -> None:
         
         # Detect Collison, Out of Bounds, and Update Grid 
         collision_checker(p1, p2, grid, screen)
-        # if p1.x < 0 or p1.x > GRID_COLUMNS - 1:
-        #     game_over('tie', p1, p2, grid, screen)
-        # elif p1.y < 0 or p1.y > GRID_ROWS - 1:
-        #     game_over(p1, p2, grid, screen)
-        # elif grid[p1.y][p1.x] == 1 or grid[p1.y][p1.x] == 2:
-        #     game_over(p1, p2, grid, screen)
-        # else:
-        #     grid[p1.y][p1.x] = 1
-
-        # if p2.x < 0 or p2.x > GRID_COLUMNS - 1:
-        #     game_over(p1, p2, grid, screen)
-        # elif p2.y < 0 or p2.y > GRID_ROWS - 1:
-        #     game_over(p1, p2, grid, screen)
-        # elif grid[p2.y][p2.x] == 2 or grid[p2.y][p2.x] == 1:
-        #     game_over(p1, p2, grid, screen)
 
         grid[p1.y][p1.x] = 1
         grid[p2.y][p2.x] = 2
