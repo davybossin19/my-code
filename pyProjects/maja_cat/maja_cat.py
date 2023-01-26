@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os, time
 
 os.system('clear')
@@ -15,10 +17,11 @@ os.system('clear')
 while count < 35:
     frame = frames[count % 3]
     for i, line in enumerate(frame):
+        #Each line of a frame will accumulate 10 spaces with each iteration
         frame[i] = ' '*10 + line
     print("".join(frame))
     count += 1
-    time.sleep(0.2)
+    time.sleep(0.08)
     os.system('clear')
 
 with open('banner.txt', 'r', encoding = 'utf8') as banner:

@@ -13,7 +13,7 @@ def merge_sort(arr: List[int]) -> List[int]:
     [-44, -2, 3, 3, 5, 8, 44]
 
     >>> merge_sort([5, 3, -3])
-    [-3, 3, 5]
+    [-3, 3, 5, 6]
 
     >>> merge_sort([])
     []
