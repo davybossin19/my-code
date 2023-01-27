@@ -19,7 +19,7 @@ def print_all_rosters(league: yfa.League, team_ids: list[dict]):
             print("{} - {}".format(player['name'], player['eligible_positions'][0]))
             count += 1
             percent_owned_tally += percent_owned_map[player['player_id']]
-        print("Average Percent Owned: {}".format(percent_owned_tally/count))
+        print("Average Percent Owned: {}".format(round(percent_owned_tally/count, 2)))
         print("------END OF TEAM-------")
 
 def rank_teams_by_unweighted_percent_owned(league: yfa.League, team_ids: list[dict[str, int]]):
@@ -68,11 +68,11 @@ def main():
     team_ids = lg.teams()
 
 
-    # print_all_rosters(lg, team_ids)
+    print_all_rosters(lg, team_ids)
     sorted_teams = rank_teams_by_unweighted_percent_owned(lg, team_ids)
     
     for i, team in enumerate(sorted_teams):
-        print("{} - {} - Average Ownership %: {}".format(i + 1, team['name'], team['avg']))
+        print("{} - {} - Average Ownership %: {}".format(i + 1, team['name'], round(team['avg'], 2)))
 
 if __name__ == "__main__":
     main()
